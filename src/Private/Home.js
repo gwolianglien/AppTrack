@@ -4,41 +4,28 @@ import firebase from '../Fire';
 
 import {
   getTodayDate, getNumDaysApart,
-
-  routeJobs,
 } from './MyFunctions';
-
-import {
-  MyProgress, MySaved
-} from './MyComponents';
+//
+// import {
+//   MyProgress, MySaved
+// } from './MyComponents';
 
 export const ScoreCard = (props) => {
-
-  var keyword1, keyword2, keyword3;
-  var currType = props.type;
-  if (currType === "Jobs") {
-    keyword1 = "App";
-    keyword2 = "Jobs";
-  } else if (currType === "Contacts") {
-    keyword1 = "Contact";
-    keyword2 = "Contacts";
-    keyword3 = "Outreach"
-  } else {
-    throw Error("Unaccounted Score Card type")
-  }
 
   return (
     <div className="col-lg-4">
       <div className="card border-dark">
-        <Link className="card-link" to={() => routeJobs()}>
-          <div className="card-header">
-            <h5 className="card-title">Your Weekly {keyword1} Score</h5>
-          </div>
-        </Link>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">Your {keyword2} Score: {props.JobScore}</li>
-          <li className="list-group-item">Your {keyword1} Score: {props.AppScore}</li>
-        </ul>
+        <div className="card-body">
+          <Link className="card-link" to={props.Link}>
+            <div className="card-header card-header-effects">
+              <h5 className="card-title align-center-all">Your Job Score</h5>
+            </div>
+          </Link>
+          <ul className="list-group list-group-flush">
+            <li className="list-group-item">You applied to: <strong>{props.JobScore}</strong> roles this week</li>
+            <li className="list-group-item">You've gotten: <strong>{props.AppScore}</strong> offers</li>
+          </ul>
+        </div>
       </div>
     </div>
   )
@@ -74,9 +61,10 @@ class Home extends Component {
 
   // Database Read Functions
   mountUserData = (user) => {
-    this.mountCompanies(user);
-    this.mountUserContacts(user);
+    // this.mountCompanies(user);
+    // this.mountUserContacts(user);
     this.mountUserJobs(user);
+    this.updateScores();
   }
 
   mountCompanies = (user) => {
@@ -198,6 +186,7 @@ class Home extends Component {
         <div className="row">
           <ScoreCard
             type="Jobs"
+            Link="/Jobs/"
             JobScore={this.state.score2}
             AppScore={this.state.score1} />
         </div>
@@ -209,10 +198,12 @@ class Home extends Component {
   render() {
     return (
       <div className="App-body">
-        <div className="App-banner align-center-all">
-          <h1>Launch Your Job Hunt.</h1>
+        <div className="container-banner container-banner-shift container-banner-height my-color">
+          <div className="align-center-block text-wrapper fit">
+            <h1 className="text-title">Launch Your Job Hunt.</h1>
+          </div>
         </div>
-        <div className="App-content">
+        <div className="container-body container-body-shift">
           {this.SummaryTable()}
         </div>
       </div>

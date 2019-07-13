@@ -48,11 +48,9 @@ class App extends Component {
   render() {
     if (this.state.loading) {
       return <Loading />;
-    } else {
-      if (this.state.authenticated) {
-        return <Private />;
-      }
-      return <Public />;
+    }
+    else {
+      return this.state.authenticated ? <Private /> : <Public />;
     }
   }
 }

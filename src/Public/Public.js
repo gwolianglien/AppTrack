@@ -17,13 +17,11 @@ class Public extends Component {
 
   render() {
     return (
-      <div className="App-base">
+      <div className="App">
         <header className="App-header">
           <Header />
         </header>
-        <div className="App-body">
-          {this.Router()}
-        </div>
+        {this.Router()}
       </div>
     )
   }

@@ -25,9 +25,11 @@ export const Navigator = (props) => {
           data-target="#add-form" aria-expanded="false" aria-controls="add-form">
           {props.add}
         </button>
+        {/*
         <button className="btn btn-success btn-lg" type="button" onClick={props.routeHelp}>
           {props.help}
         </button>
+        */}
         <button className="btn btn-info btn-lg" type="button" onClick={props.routeArchive}>
           {props.archive}
         </button>
@@ -40,9 +42,11 @@ export const Navigator = (props) => {
               data-target="#add-form" aria-expanded="false" aria-controls="add-form">
               {props.add}
             </button>
+            {/*
             <button className="btn btn-success btn-lg col-lg-12" type="button" onClick={props.routeHelp}>
               {props.help}
             </button>
+            */}
             <button className="btn btn-info btn-lg col-lg-12" type="button" onClick={props.routeArchive}>
               {props.archive}
             </button>
