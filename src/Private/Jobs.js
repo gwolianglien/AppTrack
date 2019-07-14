@@ -412,7 +412,6 @@ class Jobs extends Component {
   }
 
   Container = () => {
-
     if (this.state.offers.length > 0 || this.state.recentApps.length > 0 || this.state.savedJobs.length > 0) {
       return (
         <span>
@@ -425,7 +424,6 @@ class Jobs extends Component {
       return <Demo />;
     }
   }
-
 
   render() {
     return (

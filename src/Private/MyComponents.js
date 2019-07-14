@@ -21,35 +21,55 @@ export const Navigator = (props) => {
   return (
     <div className="container-fluid">
       <div className="btn-group d-none d-md-flex justify-content-center align-center">
-        <button className="btn btn-primary btn-lg" type="button" data-toggle="collapse"
-          data-target="#add-form" aria-expanded="false" aria-controls="add-form">
-          {props.add}
-        </button>
-        {/*
-        <button className="btn btn-success btn-lg" type="button" onClick={props.routeHelp}>
-          {props.help}
-        </button>
-        */}
-        <button className="btn btn-info btn-lg" type="button" onClick={props.routeArchive}>
-          {props.archive}
-        </button>
+        {props.add ?
+          <button className="btn btn-primary btn-lg" type="button" data-toggle="collapse"
+            data-target="#add-form" aria-expanded="false" aria-controls="add-form">
+            {props.add}
+          </button>
+          :
+          null
+        }
+        {props.help ?
+          <button className="btn btn-success btn-lg" type="button" onClick={props.routeHelp}>
+            {props.help}
+          </button>
+          :
+          null
+        }
+        {props.archive ?
+          <button className="btn btn-info btn-lg" type="button" onClick={props.routeArchive}>
+            {props.archive}
+          </button>
+          :
+          null
+        }
       </div>
       <div className="dropdown d-md-none">
         <button className="btn btn-info dropdown-toggle col-lg-12" type="button" data-toggle="dropdown">Action</button>
         <div className="dropdown-menu">
           <div className="container-fluid">
-            <button className="btn btn-primary btn-lg col-lg-12" type="button" data-toggle="collapse"
-              data-target="#add-form" aria-expanded="false" aria-controls="add-form">
-              {props.add}
-            </button>
-            {/*
-            <button className="btn btn-success btn-lg col-lg-12" type="button" onClick={props.routeHelp}>
-              {props.help}
-            </button>
-            */}
-            <button className="btn btn-info btn-lg col-lg-12" type="button" onClick={props.routeArchive}>
-              {props.archive}
-            </button>
+            {props.add ?
+              <button className="btn btn-primary btn-lg col-lg-12" type="button" data-toggle="collapse"
+                data-target="#add-form" aria-expanded="false" aria-controls="add-form">
+                {props.add}
+              </button>
+              :
+              null
+            }
+            {props.help ?
+              <button className="btn btn-success btn-lg col-lg-12" type="button" onClick={props.routeHelp}>
+                {props.help}
+              </button>
+              :
+              null
+            }
+            {props.archive ?
+              <button className="btn btn-info btn-lg col-lg-12" type="button" onClick={props.routeArchive}>
+                {props.archive}
+              </button>
+              :
+              null
+            }
           </div>
         </div>
       </div>

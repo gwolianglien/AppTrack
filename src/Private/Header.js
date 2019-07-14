@@ -74,6 +74,10 @@ class Header extends Component {
             </li>
 
             <li className="nav-item" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-label="Toggle navigation">
+              <Link to="/Companies" className="nav-link">Company</Link>
+            </li>
+
+            <li className="nav-item" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-label="Toggle navigation">
               <Link to="/Jobs" className="nav-link">Jobs</Link>
             </li>
 

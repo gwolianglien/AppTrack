@@ -24,7 +24,6 @@ export const Body = () => {
             <div class="card-body">
               <h5 class="card-title">Save Your Favorite Companies</h5>
               <p class="card-text">There are a ton of opportunities. Save and set a reminder for yourself to look into your favorite companies!</p>
-
             </div>
           </div>
           <div class="card">
@@ -46,7 +45,6 @@ export const Body = () => {
     </div>
   )
 }
-
 
 const Home = () => {
   return (

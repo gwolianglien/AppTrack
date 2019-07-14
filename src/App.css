@@ -74,7 +74,8 @@
 .container-body {
   position: relative;
   height: auto;
-  width: 100vw;
+  width: 90vw;
+  left: 5vw;
 }
 
 
