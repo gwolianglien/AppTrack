@@ -78,7 +78,6 @@
   left: 5vw;
 }
 
-
 .shift-down-10 { top: 10vh; }
 .shift-down-20 { top: 20vh; }
 .shift-down-30 { top: 30vh; }
@@ -92,7 +91,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
 }
 .text-wrapper {
   word-wrap: break-word;
@@ -122,10 +120,27 @@
 .display-flex {
   display: flex;
 }
+
+/* Display CSS */
+a {
+  text-decoration: none;
+  color: black;
+  -o-transition:.5s;
+  -ms-transition:.5s;
+  -moz-transition:.5s;
+  -webkit-transition:.5s;
+  transition:.5s;
+}
+a:hover {
+  color: #1DA9FF;
+}
 ::placeholder {
   font-style: italic;
 }
 
+
+
+/* */
 
 .App-base {
   position: relative;

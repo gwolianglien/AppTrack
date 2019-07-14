@@ -4,22 +4,235 @@ import firebase from '../Fire';
 
 import {
   // For Main Page Controls and Forms
-  Navigator, FormInputAttribute, FormTextAreaAttribute,
-
-  // For Job Cards
-  JobCardHeader, JobCardBody, JobCardControls,
+  Navigator, FormInputAttribute, FormTextAreaAttribute, Banner,
 } from './MyComponents';
 
 import {
-  // Routing
-  routeArchive, routeHelp, routeHome, routeJobs, routeUpdateJob,
-
   // Data check
-  getTodayDate, getNumDaysApart,
+  getTodayDate,
 
   // Form Check
-  checkString, checkAppDate,
+  checkString, checkExists,
 } from './MyFunctions';
+
+const Body = (props) => {
+  return (
+    <table className="table table-lg table-striped">
+      <thead className="thead-light">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Notes</th>
+          <th scope="col">Links</th>
+        </tr>
+      </thead>
+      <tbody>
+        {props.companiesList.map((company, i) => {
+          // variables can go here
+          return (
+            <tr key={i}>
+              <th scope="row">
+                <a href={company.url} target="_blank" rel="noopener noreferrer">
+                  {company.name}
+                </a>
+              </th>
+              <td>{company.notes}</td>
+              <td>
+                {Controls(props.Remove, company)}
+              </td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+  )
+}
+
+const Controls = (removeFunction, company) => {
+  var id = company.id;
+  return (
+    <div className="row">
+      <div className="btn-group d-none d-md-flex justify-content-center">
+        {RemoveButton(removeFunction, id)}
+      </div>
+      <div className="dropdown d-md-none">
+        <button className="btn btn-secondary col-lg-12 dropdown-toggle" type="button" data-toggle="dropdown">Action</button>
+        <div className="dropdown-menu">
+          {RemoveButton(removeFunction, id)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const RemoveButton = (removeFunction, id) => {
+  return (
+    <button className="btn btn-danger" type="button"
+      onClick={() => removeFunction(id)}>
+      Remove
+    </button>
+  )
+}
+
+class Companies extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      authenticated: null,
+      user: null,
+      companies: [],
+    }
+    this.add = this.add.bind(this);
+    this.remove = this.remove.bind(this);
+  }
+
+  componentDidMount() {
+    this.removeAuthListener = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+
+        // Load and retrieve all companies for this user
+        let companiesRef = firebase.database().ref('companies').child(user.uid);
+        let list = [];
+
+        companiesRef.once('value', (data) => {
+          let allData = data.val();
+          for (var company in allData) {
+            var curr = {
+              id: company,
+              name: allData[company].name,
+              notes: allData[company].notes,
+              url: allData[company].url,
+            }
+            list.push(curr);
+          }
+        }).then(() =>
+          this.setState({
+            loading: false,
+            authenticated: true,
+            user: user,
+            companies: list,
+          })
+        );
+      } else {
+        this.setState({
+          loading: false,
+          authenticated: false,
+        });
+      }
+    });
+  }
+
+  // CRUD functions
+  add = () => {
+
+    var currName = this.state.companyName ? this.state.companyName : "";
+    var currUrl = this.state.companyUrl ? this.state.companyUrl : "";
+    var currNotes = this.state.companyNotes ? this.state.companyNotes : "";
+    var today = getTodayDate();
+
+    let newCompany = {
+      name: currName,
+      url: currUrl,
+      notes: currNotes,
+      dateAdd: today,
+    }
+
+    var passedCompanyNameTest = true;
+    var passedDuplicateCompanyNameTest = true;
+    if (!checkString(newCompany.name)) {
+      alert("Company name cannot be blank!");
+      passedCompanyNameTest = false;
+    }
+    if (checkExists(newCompany.name, this.state.companies)) {
+      alert("You already have this company in your list!");
+      passedDuplicateCompanyNameTest = false;
+    }
+
+    if (passedCompanyNameTest && passedDuplicateCompanyNameTest) {
+      var db = firebase.database().ref('companies').child(this.state.user.uid);
+      db.push(newCompany).then(() => this.refreshWindow());
+    }
+  }
+
+  remove = (companyId) => {
+    try {
+      let db = firebase.database().ref('companies').child(this.state.user.uid).child(companyId);
+      db.remove().then(() => this.refreshWindow());
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  /* State and Screen Change Functions */
+  handleChange = (event) => {
+    const newValue = event.target.value;
+    this.setState({
+      [event.target.name]: newValue,
+    });
+  }
+  handleSubmit = (event) => {
+    event.preventDefault();
+  }
+  refreshWindow = () => {
+    window.location.reload();
+  }
+
+  /* Add Company Form */
+  CompanyAddForm = () => {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <div className="row">
+          <div className="col-lg-6">
+            <FormInputAttribute idName="companyName" type="text" title="*Name" placeholder="What Company Interests You?" stateVal={this.state.companyName} handleChange={this.handleChange} />
+          </div>
+          <div className="col-lg-6">
+            <FormInputAttribute idName="companyUrl" type="text" title="Url" placeholder="Do you have the Company Website?" stateVal={this.state.companyUrl} handleChange={this.handleChange} />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-lg-12">
+            <FormTextAreaAttribute idName="companyNotes" title="Notes" placeholder="Any Special Notes?" stateVal={this.state.companyNotes} handleChange={this.handleChange} />
+          </div>
+        </div>
+        <div className="form-group">
+          <div className="container">
+            <div className="btn-group d-none d-md-flex justify-content-center">
+              <button className="btn btn-primary" onClick={this.add}>Add This Job!</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    )
+  }
+
+  render() {
+    return (
+      <div className="App-body">
+        <Banner
+          Text={"Where Do You Envision Yourself?"} />
+        <div className="container-body container-body-shift">
+          <div className="App-controls">
+            <Navigator
+              add="Add a Company!"
+              />
+          </div>
+
+          {/* Company Add Form */}
+          <div className="collapse" id="add-form">
+            {this.CompanyAddForm()}
+          </div>
+
+          <Body
+            companiesList={this.state.companies}
+            Remove={this.remove}
+            />
+        </div>
+      </div>
+    )
+  }
+}
+
+export default withRouter(Companies);
 
 // class CompaniesOld extends Component {
 //   constructor(props) {
@@ -311,159 +524,3 @@ import {
 //     )
 //   }
 // }
-
-const Banner = (props) => {
-  return (
-    <div className="container-banner container-banner-shift container-banner-height my-color">
-      <div className="align-center-block text-wrapper fit">
-        <h1 className="text-title">{props.Text}</h1>
-      </div>
-    </div>
-  )
-}
-
-const Body = (props) => {
-  return (
-    <table className="table table-lg">
-      <thead className="thead-light">
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Name</th>
-          <th scope="col">Something</th>
-          <th scope="col">Something</th>
-        </tr>
-      </thead>
-      <tbody>
-        {props.companiesList.map((company, i) => {
-          // variables can go here
-          return (
-            <tr>
-              <th scope="row">{i}</th>
-              <td>{company.name}</td>
-              <td>{company.url}</td>
-              <td>{company.notes}</td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
-  )
-}
-
-class Companies extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: true,
-      authenticated: null,
-      user: null,
-      companies: [],
-    }
-  }
-
-  componentDidMount() {
-    this.removeAuthListener = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-
-        // Load and retrieve all companies for this user
-        let companiesRef = firebase.database().ref('companies').child(user.uid);
-        let list = [];
-
-        companiesRef.once('value', (data) => {
-          let allData = data.val();
-          for (var company in allData) {
-            var curr = {
-              id: company,
-              name: allData[company].name,
-              notes: allData[company].notes,
-              url: allData[company].url,
-            }
-            list.push(curr);
-          }
-        }).then(() =>
-          this.setState({
-            loading: false,
-            authenticated: true,
-            user: user,
-            companies: list,
-          })
-        );
-      } else {
-        this.setState({
-          loading: false,
-          authenticated: false,
-        });
-      }
-    });
-  }
-
-  /* State and Screen Change Functions */
-  handleChange = (event) => {
-    const newValue = event.target.value;
-    this.setState({
-      [event.target.name]: newValue,
-    });
-  }
-  handleSubmit = (event) => {
-    event.preventDefault();
-  }
-  refreshWindow = () => {
-    window.location.reload();
-  }
-
-  /* Add Company Form */
-  CompanyAddForm = () => {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <div className="row">
-          <div className="col-lg-6">
-            <FormInputAttribute idName="jobName" type="text" title="*Title" placeholder="What role are you applying for?" stateVal={this.state.jobName} handleChange={this.handleChange} />
-          </div>
-          <div className="col-lg-6">
-            <FormInputAttribute idName="jobCompany" type="text" title="*Company" placeholder="Which company are you applying to?" stateVal={this.state.jobCompany} handleChange={this.handleChange} />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-lg-6">
-            <FormInputAttribute idName="jobAppDate" type="date" title="Did You Apply Yet?" placeholder="When did you apply?" stateVal={this.state.jobAppDate} handleChange={this.handleChange} />
-          </div>
-          <div className="col-lg-6">
-            <FormInputAttribute idName="jobURL" type="text" title="Link" placeholder="Do you have a link to the job application?" stateVal={this.state.jobURL} handleChange={this.handleChange} />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-lg-12">
-            <FormTextAreaAttribute idName="jobNotes" title="Notes" placeholder="Are there any special things to be aware of for this job?" stateVal={this.state.jobNotes} handleChange={this.handleChange} />
-          </div>
-        </div>
-        <div className="form-group">
-          <div className="container">
-            <div className="btn-group d-none d-md-flex justify-content-center">
-              <button className="btn btn-primary" onClick={this.add}>Add This Job!</button>
-            </div>
-          </div>
-        </div>
-      </form>
-    )
-  }
-
-
-  render() {
-    return (
-      <div className="App-body">
-        <Banner
-          Text={"Where Do You Envision Yourself?"} />
-        <div className="container-body container-body-shift">
-          <Navigator
-            add="Add a Company!"
-            />
-          <Body
-            companiesList={this.state.companies}
-            />
-        </div>
-      </div>
-    )
-  }
-}
-
-export default withRouter(Companies);

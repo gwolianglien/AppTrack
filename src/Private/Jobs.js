@@ -4,7 +4,7 @@ import firebase from '../Fire';
 
 import {
   // For Main Page Controls and Forms
-  Navigator, FormInputAttribute, FormTextAreaAttribute,
+  Navigator, FormInputAttribute, FormTextAreaAttribute, Banner,
 
   // For Job Cards
   JobCardHeader, JobCardBody, JobCardControls,
@@ -428,17 +428,15 @@ class Jobs extends Component {
   render() {
     return (
       <div className="App-body">
-        <div className="App-banner align-center-all"> {/* Page Banner */}
-          <h1>Pursue What Excites You.</h1>
-        </div>
+        <Banner
+          Text={"Pursue What Excites You."} />
 
-        <div className="App-content">
+        <div className="container-body container-body-shift">
 
           {/* Page Controls and Navigation */}
           <div className="App-controls">
             <Navigator
               add="Start a Job App!"
-              help="Need Some Help?"
               archive="See Past Apps"
               routeHelp={() => routeHelp(this.props.history)}
               routeArchive={() => routeArchive(this.props.history)}

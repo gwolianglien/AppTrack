@@ -10,8 +10,10 @@ import {
 /* Common Components */
 export const Banner = (props) => {
   return (
-    <div className="App-banner align-center-all">
-      <h1>{props.headline}</h1>
+    <div className="container-banner container-banner-shift container-banner-height my-color">
+      <div className="align-center-block text-wrapper fit">
+        <h1 className="text-title">{props.Text}</h1>
+      </div>
     </div>
   )
 }
