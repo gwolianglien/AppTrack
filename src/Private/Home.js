@@ -5,13 +5,8 @@ import firebase from '../Fire';
 import {
   getTodayDate, getNumDaysApart,
 } from './MyFunctions';
-//
-// import {
-//   MyProgress, MySaved
-// } from './MyComponents';
 
-export const ScoreCard = (props) => {
-
+const JobScoreCard = (props) => {
   return (
     <div className="col-lg-4">
       <div className="card border-dark">
@@ -22,8 +17,48 @@ export const ScoreCard = (props) => {
             </div>
           </Link>
           <ul className="list-group list-group-flush">
-            <li className="list-group-item">You applied to: <strong>{props.JobScore}</strong> roles this week</li>
-            <li className="list-group-item">You've gotten: <strong>{props.AppScore}</strong> offers</li>
+            <li className="list-group-item">You applied to: <strong>{props.AppScore}</strong> roles this week</li>
+            <li className="list-group-item">You've gotten: <strong>{props.OfferScore}</strong> offers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const CompaniesScoreCard = (props) => {
+  return (
+    <div className="col-lg-4">
+      <div className="card border-dark">
+        <div className="card-body">
+          <Link className="card-link" to={props.Link}>
+            <div className="card-header card-header-effects">
+              <h5 className="card-title align-center-all">Your Companies Score</h5>
+            </div>
+          </Link>
+          <ul className="list-group list-group-flush">
+            <li className="list-group-item">You added: <strong>{props.CompanyScore}</strong> new companies this week</li>
+            <li className="list-group-item">You've added a total of: <strong>{props.TotalCompanyScore}</strong> companies</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const ContactScoreCard = (props) => {
+  return (
+    <div className="col-lg-4">
+      <div className="card border-dark">
+        <div className="card-body">
+          <Link className="card-link" to={props.Link}>
+            <div className="card-header card-header-effects">
+              <h5 className="card-title align-center-all">Your Contacts Score</h5>
+            </div>
+          </Link>
+          <ul className="list-group list-group-flush">
+            <li className="list-group-item">You added: <strong>{props.ContactScore}</strong> new contacts this week</li>
+            <li className="list-group-item">You've reached out to: <strong>{props.OutreachScore}</strong> people</li>
           </ul>
         </div>
       </div>
@@ -36,8 +71,9 @@ class Home extends Component {
     super(props);
     this.state = {
       authenticated: null,
+      loading: true,
       user: null,
-      userCompanies: [],
+      companies: [],
       jobs: [],
       userContacts: [],
     }
@@ -50,10 +86,12 @@ class Home extends Component {
         this.setState({
           user: user,
           authenticated: true,
+          loading: false,
         });
       } else {
         this.setState({
           authenticated: false,
+          loading: false,
         });
       }
     })
@@ -61,29 +99,40 @@ class Home extends Component {
 
   // Database Read Functions
   mountUserData = (user) => {
-    // this.mountCompanies(user);
+    this.mountCompanies(user);
     // this.mountUserContacts(user);
-    this.mountUserJobs(user);
-    this.updateScores();
+    this.mountJobs(user);
   }
 
   mountCompanies = (user) => {
+    var companyScore = 0;
+    var totalCompanyScore = 0;
+    var today = getTodayDate();
+    let list = []
     let companiesRef = firebase.database().ref('companies').child(user.uid);
-    let companies = []
     companiesRef.once('value', (data) => {
-      let allUserCompanies = data.val();
-      for (var company in allUserCompanies) {
-        var thisCompany = {
+      let allCompaniesData = data.val();
+      for (var company in allCompaniesData) {
+        var currCompany = {
           id: company,
-          name: allUserCompanies[company].name,
-          notes: allUserCompanies[company].notes
+          name: allCompaniesData[company].name,
+          notes: allCompaniesData[company].notes,
+          dateAdd: allCompaniesData[company].dateAdd,
         }
-        companies.push(thisCompany);
+        list.push(currCompany);
+
+        var n = getNumDaysApart(currCompany.dateAdd, today);
+        if (n <= 7) {
+          companyScore++;
+        }
       }
+      totalCompanyScore = list.length;
     }).then(() => {
       this.setState({
-        userCompanies: companies,
-      })
+        companies: list,
+        CompanyScore: companyScore,
+        TotalCompanyScore: totalCompanyScore,
+      });
     });
   }
 
@@ -113,13 +162,20 @@ class Home extends Component {
     });
   }
 
-  mountUserJobs = (user) => {
+  mountJobs = (user) => {
+
+    let list = [];
+    var appScore = 0;
+    var savedScore = 0;
+    var offerScore = 0;
+    var today = getTodayDate();
+    // DB ref
     let jobsRef = firebase.database().ref('jobs').child(user.uid);
-    let myJobs = []
+
     jobsRef.once('value', (data) => {
       let allJobs = data.val();
       for (var job in allJobs) {
-        var thisJob = {
+        var currJob = {
           id: job,
           name: allJobs[job].name,
           company: allJobs[job].company,
@@ -129,66 +185,57 @@ class Home extends Component {
           offer: allJobs[job].offer,
           notes: allJobs[job].notes,
         }
-        myJobs.push(thisJob);
+        list.push(currJob); // Add job to list
+
+        if (currJob.dateCreated) {
+          var numDaysSinceAdd = getNumDaysApart(currJob.dateCreated, today);
+          if (numDaysSinceAdd <= 7) {
+            savedScore++;
+          }
+        }
+        if (currJob.dateApplied) {
+          var numDaysSinceApp = getNumDaysApart(currJob.dateApplied, today);
+          if (numDaysSinceApp <= 7) {
+            appScore++;
+          }
+        }
+        if (currJob.offer === "1") {
+          offerScore++;
+        }
       }
     }).then(() => {
       this.setState({
-        jobs: myJobs,
+        jobs: list,
+        AppScore: appScore,
+        SaveScore: savedScore,
+        OfferScore: offerScore,
       })
     });
   }
 
-  updateScores = () => {
-
-    var appScore = 0;
-    var savedScore = 0;
-    var today = getTodayDate();
-
-    for (var job in this.state.jobs) {
-
-      var createDate = job.dateCreated;
-      var appDate = job.dateApplied;
-
-      // Possible error from creating job, and not storing date created
-      if (!createDate) {
-        continue;
-      }
-
-      var numDaysSinceAdd = getNumDaysApart(createDate, today);
-      if (numDaysSinceAdd <= 7) {
-        savedScore++;
-      }
-
-      if (!appDate) {
-        continue;
-      }
-
-      var numDaysSinceApp = getNumDaysApart(appDate, today);
-      if (numDaysSinceApp <= 7) {
-        appScore++;
-      }
-    }
-
-    try {
-      this.setState({
-        score1: appScore,
-        score2: savedScore,
-      });
-    } catch {
-      throw Error("Failure updating state");
-    }
-
+  getContactScore = () => {
+    // Contact Scores
+    // var outreachScore = 0;
+    // var contactScore = 0;
+    return null;
   }
 
   SummaryTable = () => {
     return (
       <div className="container-fluid">
         <div className="row">
-          <ScoreCard
-            type="Jobs"
+          <CompaniesScoreCard
+            Link="/Companies/"
+            CompanyScore={this.state.CompanyScore}
+            TotalCompanyScore={this.state.TotalCompanyScore} />
+          <JobScoreCard
             Link="/Jobs/"
-            JobScore={this.state.score2}
-            AppScore={this.state.score1} />
+            AppScore={this.state.AppScore}
+            OfferScore={this.state.OfferScore} />
+          <ContactScoreCard
+            Link="/"
+            ContactScore={0}
+            OutreachScore={0} />
         </div>
       </div>
     )

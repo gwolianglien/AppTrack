@@ -4,7 +4,7 @@ import firebase from '../Fire';
 
 import {
   // For Job Cards
-  JobCardHeader, JobCardBody, JobCardControls,
+  JobCardHeader, JobCardBody, JobCardControls, Banner,
 } from './MyComponents';
 
 import {
@@ -214,13 +214,15 @@ class Archive extends Component {
   render() {
     return (
       <div className="App-body">
-        <div className="App-banner align-center-all">
-          <h1>Your Past Apps</h1>
-        </div>
-        <div className="App-content">
+
+        <Banner
+          Text={"Your Past Apps"} />
+
+        <div className="container-body container-body-shift">
           {this.Rejections()}
           {this.ArchivedJobs()}
         </div>
+        
       </div>
     )
   }
