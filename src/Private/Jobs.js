@@ -165,18 +165,30 @@ class Jobs extends Component {
 
     if (!passedNameTest) {
       alert("Job name cannot be blank!");
+      return 1;
     }
     else if (!passedCompanyNameTest) {
       alert("Company name cannot be blank!");
+      return 1;
     }
     else if (!passedAppDateTest) {
       alert("Application date can't be in the future!");
+      return 1;
+    }
+
+    let newCompany = {
+      name: this.state.jobCompany,
+      dateCreated: todayDate,
+      notes: "",
+      url: "",
     }
 
     // Add only if all tests pass and return true
     if (passedNameTest && passedCompanyNameTest && passedAppDateTest) {
       firebase.database().ref('jobs').child(this.state.user.uid).push(newJob);
+      firebase.database().ref('companies').child(this.state.user.uid).push(newCompany);
       this.refreshWindow();
+      return 0;
     }
   }
 
@@ -188,18 +200,21 @@ class Jobs extends Component {
       this.refreshWindow();
       console.log("Error in updating Application Date")
       routeJobs(this.props.history);
+      return 1;
     }
 
     var passedAppDateTest = checkAppDate(newJobAppDate) ? true : false;
     if (!passedAppDateTest) {
       alert("Application date can't be in the future!");
       this.refreshWindow();
+      return 1;
     }
 
     var temp = { 'dateApplied': newJobAppDate }
     var path = firebase.database().ref('jobs').child(this.state.user.uid).child(jobId);
     path.update(temp);
     this.refreshWindow();
+    return 0;
   }
 
   updateApplicationResult = (jobId) => {
@@ -208,17 +223,20 @@ class Jobs extends Component {
     if (offer === "" || typeof(offer) === "undefined") {
       this.refreshWindow();
       routeJobs(this.props.history);
+      return 1;
     }
 
     var temp = { 'offer': offer }
     var path = firebase.database().ref('jobs').child(this.state.user.uid).child(jobId);
     path.update(temp);
     this.refreshWindow();
+    return 0;
   }
 
   removeJob = (jobID) => {
     let userJobDBRef = firebase.database().ref('jobs').child(this.state.user.uid).child(jobID);
     userJobDBRef.remove().then(() => this.refreshWindow());
+    return 0;
   }
 
   // State and Screen Change Functions

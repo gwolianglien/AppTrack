@@ -17,8 +17,8 @@ const JobScoreCard = (props) => {
             </div>
           </Link>
           <ul className="list-group list-group-flush">
-            <li className="list-group-item">You applied to: <strong>{props.AppScore}</strong> roles this week</li>
-            <li className="list-group-item">You've gotten: <strong>{props.OfferScore}</strong> offers</li>
+            <li className="list-group-item">You applied to: <strong>{props.AppScore}</strong> role(s) this week</li>
+            <li className="list-group-item">You've gotten: <strong>{props.OfferScore}</strong> offer(s)</li>
           </ul>
         </div>
       </div>
@@ -37,8 +37,8 @@ const CompaniesScoreCard = (props) => {
             </div>
           </Link>
           <ul className="list-group list-group-flush">
-            <li className="list-group-item">You added: <strong>{props.CompanyScore}</strong> new companies this week</li>
-            <li className="list-group-item">You've added a total of: <strong>{props.TotalCompanyScore}</strong> companies</li>
+            <li className="list-group-item">You added: <strong>{props.CompanyScore}</strong> new firm(s) this week</li>
+            <li className="list-group-item">You've added a total of: <strong>{props.TotalCompanyScore}</strong> firm(s)</li>
           </ul>
         </div>
       </div>
@@ -57,7 +57,7 @@ const ContactScoreCard = (props) => {
             </div>
           </Link>
           <ul className="list-group list-group-flush">
-            <li className="list-group-item">You added: <strong>{props.ContactScore}</strong> new contacts this week</li>
+            <li className="list-group-item">You added: <strong>{props.ContactScore}</strong> new contact(s) this week</li>
             <li className="list-group-item">You've reached out to: <strong>{props.OutreachScore}</strong> people</li>
           </ul>
         </div>

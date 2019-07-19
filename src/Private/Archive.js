@@ -100,11 +100,13 @@ class Archive extends Component {
     temp['offer'] = res;
     path.update(temp);
     this.refreshWindow();
+    return 0;
   }
 
   removeJob = (jobID) => {
     let userJobDBRef = firebase.database().ref('jobs').child(this.state.user.uid).child(jobID);
     userJobDBRef.remove().then(() => this.refreshWindow());
+    return 0;
   }
 
   /* State and Screen Change Functions */
@@ -222,7 +224,7 @@ class Archive extends Component {
           {this.Rejections()}
           {this.ArchivedJobs()}
         </div>
-        
+
       </div>
     )
   }

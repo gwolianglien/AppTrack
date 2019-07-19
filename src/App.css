@@ -41,7 +41,7 @@
   .container-body-shift { top: 60vh; }
   .text-title { font-size: 16px; }
   .text-subtitle { font-size: 12px; }
-  .my-color { background-color: lightgray; }
+  .my-color { background-color: lightblue; }
 }
 @media only screen and (max-width: 992px) {
   /* Tablets */
@@ -51,7 +51,7 @@
   .container-body-shift { top: 60vh; }
   .text-title { font-size: 20px; }
   .text-subtitle { font-size: 16px; }
-  .my-color { background-color: lightgreen; }
+  .my-color { background-color: lightblue; }
 }
 @media only screen and (max-width: 1204px) {
   /* Small Laptops */
@@ -61,7 +61,7 @@
   .container-body-shift { top: 20vh; }
   .text-title { font-size: 36px; }
   .text-subtitle { font-size: 20px; }
-  .my-color { background-color: lightpink; }
+  .my-color { background-color: lightblue; }
 }
 /* End of Responsive Content */
 
